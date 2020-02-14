@@ -6,12 +6,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Install packages
 RUN apt-get -y update && apt-get -y install apt-utils build-essential curl gettext git gosu wget
 
-# Add docker user
-RUN useradd -m docker
-RUN usermod -aG sudo docker
-
 # Set workspace
-RUN mkdir /work && chmod docker:docker
+RUN mkdir /work
 
-# Switch to docker user
-USER docker
+# Set Entrypoint
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
