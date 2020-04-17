@@ -1,18 +1,35 @@
 .DEFAULT_GOAL := help
 
-define build_specific_version_branch
+repo := google/cloud-sdk
+tags := slim
+trigger_url := https://hub.docker.com/api/build/v1/source/cc717a15-c9ee-4a71-8888-7d2b1e46ba3b/trigger/422a7f38-3e09-4c08-b083-47c62093acf3/call/
+
+define build_git_branch
 	git checkout master
-	git branch -D $(2) || true
-	git checkout -b $(2)
-	sed -i -e "s@FROM $(1):latest@FROM $(1):$(2)@" Dockerfile
-	git commit -am "Change base image to $(1):$(2)"
-	git push origin $(2) --force-with-lease
+	git fetch
+	git branch -D $(1) || true
+	git checkout -b $(1)
+	sed -i -e "s@FROM $(repo):latest@FROM $(repo):$(1)@" Dockerfile
+	git commit -am "Change base image to $(repo):$(1)"
+	git push origin $(1) --force-with-lease
 	git checkout master
+
+endef
+
+define build_docker_image
+	curl -H "Content-Type: application/json" --data "{\"source_type\": \"Branch\", \"source_name\": \"$(1)\"}" -X POST $(trigger_url)
+
 endef
 
 .PHONY: build
-build: ## build_specific_version_branch
-	$(call build_specific_version_branch,$(repo),$(tag))
+build: ## build all tags
+	git fetch --all
+	$(foreach tag,$(tags),$(call build_git_branch,$(tag)))
+
+.PHONY: rebuild
+rebuild: ## rebuild all tags
+	$(foreach tag,$(tags),$(call build_docker_image,$(tag)))
+	$(call build_docker_image,master)
 
 
 
