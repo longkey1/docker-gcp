@@ -17,7 +17,11 @@ define build_git_branch
 endef
 
 define build_docker_image
-	curl -H "Content-Type: application/json" --data "{\"source_type\": \"Branch\", \"source_name\": \"$(1)\"}" -X POST $(trigger_url)
+	@if [ -z "$(TRIGGER_URL)" ]; then \
+		echo "TRIGGER_URL is empty."; \
+		exit 1; \
+	fi
+	curl -H "Content-Type: application/json" --data "{\"source_type\": \"Branch\", \"source_name\": \"$(1)\"}" -X POST $(TRIGGER_URL)
 
 endef
 
