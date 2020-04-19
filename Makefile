@@ -2,7 +2,6 @@
 
 repo := google/cloud-sdk
 tags := slim
-trigger_url := https://hub.docker.com/api/build/v1/source/cc717a15-c9ee-4a71-8888-7d2b1e46ba3b/trigger/422a7f38-3e09-4c08-b083-47c62093acf3/call/
 
 define build_git_branch
 	git checkout master
