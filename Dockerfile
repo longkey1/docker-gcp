@@ -1,4 +1,4 @@
-FROM google/cloud-sdk:latest
+FROM google/cloud-sdk:slim
 
 # Fix frontend not set error
 ARG DEBIAN_FRONTEND=noninteractive
